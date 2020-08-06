@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\XYZPaymentServiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +18,12 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::middleware(['api'])->group(function () {
+    Route::post('login', 'XYZPaymentServiceController@login');
+});
+Route::middleware(['auth:api'])->group(function() {
+    Route::post('process', 'XYZPaymentServiceController@process');
+});
+
+
+

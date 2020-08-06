@@ -43,7 +43,10 @@ return [
 
         'api' => [
             'driver' => 'token',
+            'input_key'=>'secret_key',
+            'storage_key'=>'secret_key',
             'provider' => 'users',
+
             'hash' => false,
         ],
     ],

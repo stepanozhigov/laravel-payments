@@ -12,7 +12,37 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Auth::routes();
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Home
+Route::get('/', 'HomeController@index')->name('main');
+
+//Payments
+Route::get('/payments', 'PaymentController@index')->name('payments');
+
+////Payments XYZ Payment
+Route::get('xyzpayment', 'XYZPaymentController@form')->name('xyzpayment.form');
+Route::post('xyzpayment', 'XYZPaymentController@pay')->name('xyzpayment.pay');
+Route::get('xyzpayment/sent', 'XYZPaymentController@sent')->name('xyzpayment.sent');
+Route::get('xyzpayment/received', 'XYZPaymentController@received')->name('xyzpayment.received');
+Route::get('xyzpayment/{id}',['uses'=>'XYZPaymentController@show', 'as'=>'xyzpayment.show'])->where('id','[0-9]+');
+
+////Payments QWERTY Kassa
+Route::get('qwertykassa', 'QwertyKassaController@form')->name('qwertykassa.form');
+Route::post('qwertykassa', 'XYZPaymentController@pay')->name('qwertykassa.pay');
+
+////Payments OLD Pay
+Route::get('oldpay', 'OldpayController@form')->name('oldpay.form');
+
+//PAYMENT REMOTE SERVICE
+//https://xyz-payment.ru/pay
+//https://qwerty.ru/pay
+Route::post('pay',[
+    'uses'=>'PayController@pay',
+    'as'=>'pay'
+]);
+
+//OTHER ROUTES
+Route::get('{path}',function() {
+    return redirect('/');
+})->where('path','[A-Za-z\-\.\_\/]+');
