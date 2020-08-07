@@ -34,4 +34,8 @@ return [
         'key' => env('XYZPAYMENT_KEY')
     ],
 
+    'qwertykassa' => [
+    'key' => env('QWERTYKASSA_KEY')
+],
+
 ];

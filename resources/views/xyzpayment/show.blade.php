@@ -14,9 +14,9 @@
     <div class="w-full sm:w-1/2 md:w-1/2 lg:w-1/2 mx-auto">
 
         <div class="mb-6">
-            @if(session('success') && session('secretkey'))
+            @if(session('success') && session('sign'))
                 {{--  MESSAGE  --}}
-                <x-xyz-payment-message type="success" :message="session('success')" :secretkey="session('secretkey')"></x-xyz-payment-message>
+                <x-xyz-payment-message type="success" :message="session('success')" :sign="session('sign')"></x-xyz-payment-message>
                 {{--  /MESSAGE  --}}
             @endif
         </div>

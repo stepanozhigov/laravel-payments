@@ -28,8 +28,8 @@ Route::get('xyzpayment/received', 'XYZPaymentController@received')->name('xyzpay
 Route::get('xyzpayment/{id}',['uses'=>'XYZPaymentController@show', 'as'=>'xyzpayment.show'])->where('id','[0-9]+');
 
 ////Payments QWERTY Kassa
-Route::get('qwertykassa', 'QwertyKassaController@form')->name('qwertykassa.form');
-Route::post('qwertykassa', 'XYZPaymentController@pay')->name('qwertykassa.pay');
+Route::get('qwertykassa', 'QwertykassaController@form')->name('qwertykassa.form');
+Route::post('qwertykassa', 'QwertykassaController@pay')->name('qwertykassa.pay');
 
 ////Payments OLD Pay
 Route::get('oldpay', 'OldpayController@form')->name('oldpay.form');
