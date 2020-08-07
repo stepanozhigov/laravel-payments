@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\QwertyPayment;
 use App\User;
 use App\XYZPayment;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +37,7 @@ class QwertykassaController extends Controller
 
     public function show($id) {
         return view('qwertykassa.show',
-            ['qwertypayments'=>QwertyPayment::with('recipient:id,name,email')->with('sender:id,name,email')->findOrFail($id)]);
+            ['qwertypayment'=>QwertyPayment::with('recipient:id,name,email')->with('sender:id,name,email')->findOrFail($id)]);
     }
 
     public function pay(Request $request) {
@@ -52,16 +53,17 @@ class QwertykassaController extends Controller
             }],
         ]);
         //calculate sum
-        $rub_sum = $this->rates['$request->currency']*$request->sum;
-
+        $sum = round(self::$rates[$request->currency]*$request->sum,2);
         //make Zttp request to payment service
-        $response = Zttp::asFormParams()->post('qwerty.ru/pay', [
-            'sum' => $rub_sum,
-            'access_key' => config('services.qwertykassa.key'),
+        $response = Zttp::withHeaders([
+            'X-SIGNATURE'=>config('services.qwertykassa.key')
+        ])->post('qwerty.ru/pay', [
+            'sum' => $sum,
             'secret_key' => Auth::user()->secret_key
         ]);
         if($response->status() === 200) {
             $paymentResponse = $response->json();
+
             //update sender balance
             $sender = Auth::user();
             $sender->balance -= $request->amount;
@@ -72,19 +74,20 @@ class QwertykassaController extends Controller
             $recipient->balance += $request->amount;
             $recipient->save();
 
-            $plain_hash = 'XYZPayment'.config('services.xyzpayment.key').Auth::user()->secret_key;
-            if(Hash::check($plain_hash,$paymentResponse['sign'])) {
+            //HASH CHECK
+            if(Hash::check(config('services.qwertykassa.key'),$response->header('X-SIGNATURE'))) {
+                //
                 //save transaction
-                $xyzpayment = XYZPayment::create([
-                    'transaction_id'=>$paymentResponse['transaction_id'],
+                $xyzpayment = QwertyPayment::create([
+                    'payment_id'=>$paymentResponse['payment_id'],
                     'order_id'=>$request->order_id,
                     'sender_id'=>Auth::user()->id,
                     'recipient_id'=>$request->input('recipient_id'),
-                    'amount'=>$request->input('amount')+0.00
+                    'sum'=>$sum
                 ]);
                 //success result
                 return redirect()->route('qwertykassa.show',['id'=>$xyzpayment->id])
-                    ->withSuccess('Transaction complete...')->withSign($paymentResponse['sign']);
+                    ->withSuccess('Transaction complete...')->withSign($response->header('X-SIGNATURE'));
             } else {
                 //payment service failure
                 return redirect()->route('qwertykassa.form')

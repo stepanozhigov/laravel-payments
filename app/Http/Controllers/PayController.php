@@ -18,20 +18,24 @@ class PayController extends Controller
             'XYZPayment'=>'ce2c7e660754cc4e325564aab86d11d8',
             'QwertyPayment'=>'mh2c7e660754cc4e325564aab86d20d1'
         ];
-        $model = array_search($request->access_key,$access_keys);
-        if($model && $request->access_key && $request->secret_key) {
-            if($model == 'XYZPayment') {
-                return response()->json([
-                    //'transaction_id'=>rand(1,4294967295),
-                    'transaction_id'=>self::generateTransactionId('App\XYZPayment','transaction_id'),
-                    'sign' => Hash::make($model.$request->access_key.$request->secret_key),
-                ],200);
-            } elseif ($model == 'QwertyPayment') {
-                return response()->json([
-                    'payment_id'=>self::generateTransactionId('App\XYZPayment','transaction_id'),
-                    'sign' => bcrypt($model.$request->access_key.$request->secret_key)
-                ],200);
-            }
+        if($request->has('access_key')) {
+            $model = array_search($request->access_key,$access_keys);
+        } else {
+            $signature = $request->header('X-SIGNATURE');
+            $model = array_search($signature,$access_keys);
+            //return response()->json(['test'=>$model]);
+        }
+        if($model == 'XYZPayment') {
+            return response()->json([
+                'transaction_id'=>self::generateTransactionId('App\XYZPayment','transaction_id'),
+                'sign' => Hash::make($model.$request->access_key.$request->secret_key),
+            ],200);
+        } elseif ($model == 'QwertyPayment') {
+            return response()
+                ->json([
+                'payment_id'=>self::generateTransactionId('App\QwertyPayment','payment_id'),
+                'sum'=>$request->sum
+            ],200)->header('X-SIGNATURE',bcrypt($signature));
         }
     }
 
