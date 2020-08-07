@@ -1,12 +1,12 @@
-{{-- xyzpayment with('recipient:id,name,email')->with('sender:id,name,email') --}}
+{{-- qwertypayment with('recipient:id,name,email')->with('sender:id,name,email') --}}
 @extends('layouts.paymentsapp')
 
 @section('content')
 <div class="w-full mx-4">
     {{--PAYMENT NAV--}}
-    <x-payment-nav-bar paymentService="xyzpayment" color="orange">
+    <x-payment-nav-bar paymentService="qwertykassa" color="blue">
         <x-slot name="logo">
-            <x-xyz-payment-logo></x-xyz-payment-logo>
+            <x-qwerty-payment-logo></x-qwerty-payment-logo>
         </x-slot>
     </x-payment-nav-bar>
     {{--/PAYMENT NAV--}}
@@ -22,7 +22,7 @@
         </div>
 
         {{--  Payment details  --}}
-        <x-xyz-payment-single-item :payment="$xyzpayment"></x-xyz-payment-single-item>
+        <x-xyz-payment-single-item :payment="$qwertypayment"></x-xyz-payment-single-item>
     </div>
     {{--  /Payment details  --}}
 

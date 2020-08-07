@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\QwertyPayment;
 use App\User;
 use App\XYZPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Zttp\Zttp;
 use Zttp\ZttpResponse;
 
 class QwertykassaController extends Controller
 {
-    public $rates = [
+    public static $rates = [
         'RUB'=>1,
         'USD'=>73.76,
         'EUR'=>87.20,
@@ -26,12 +28,15 @@ class QwertykassaController extends Controller
 
     public function form() {
         $recipients = User::where('id','!=',Auth::user()->id)->get();
-        return view('qwertykassa.form',['recipients'=>$recipients]);
+        return view('qwertykassa.form',[
+            'recipients'=>$recipients,
+            'rates'=>self::$rates
+        ]);
     }
 
     public function show($id) {
-//        dd(XYZPayment::with('recipient:id,name,email')->with('sender:id,name,email')->findOrFail($id));
-        return view('xyzpayment.show',['xyzpayment'=>XYZPayment::with('recipient:id,name,email')->with('sender:id,name,email')->findOrFail($id)]);
+        return view('qwertykassa.show',
+            ['qwertypayments'=>QwertyPayment::with('recipient:id,name,email')->with('sender:id,name,email')->findOrFail($id)]);
     }
 
     public function pay(Request $request) {
@@ -46,7 +51,6 @@ class QwertykassaController extends Controller
                 }
             }],
         ]);
-
         //calculate sum
         $rub_sum = $this->rates['$request->currency']*$request->sum;
 
@@ -68,35 +72,43 @@ class QwertykassaController extends Controller
             $recipient->balance += $request->amount;
             $recipient->save();
 
-            //save transaction
-            $xyzpayment = XYZPayment::create([
-                'transaction_id'=>$paymentResponse['transaction_id'],
-                'order_id'=>$request->order_id,
-                'sender_id'=>Auth::user()->id,
-                'recipient_id'=>$request->input('recipient_id'),
-                'amount'=>$request->input('amount')+0.00
-            ]);
-            //success result
-            return redirect()->route('xyzpayment.show',['id'=>$xyzpayment->id])
-                ->withSuccess('Transaction complete...')->withSecretkey(Auth::user()->secret_key);
+            $plain_hash = 'XYZPayment'.config('services.xyzpayment.key').Auth::user()->secret_key;
+            if(Hash::check($plain_hash,$paymentResponse['sign'])) {
+                //save transaction
+                $xyzpayment = XYZPayment::create([
+                    'transaction_id'=>$paymentResponse['transaction_id'],
+                    'order_id'=>$request->order_id,
+                    'sender_id'=>Auth::user()->id,
+                    'recipient_id'=>$request->input('recipient_id'),
+                    'amount'=>$request->input('amount')+0.00
+                ]);
+                //success result
+                return redirect()->route('qwertykassa.show',['id'=>$xyzpayment->id])
+                    ->withSuccess('Transaction complete...')->withSign($paymentResponse['sign']);
+            } else {
+                //payment service failure
+                return redirect()->route('qwertykassa.form')
+                    ->withFail('Hash check failed...')
+                    ->withInput();
+            }
         }
         //payment service failure
         else {
-            return redirect()->route('xyzpayment.form')
+            return redirect()->route('qwertykassa.form')
                 ->withFail('Transaction failed...')
                 ->withInput();
         }
     }
 
     public function sent() {
-        $xyzpayments = XYZPayment::where('sender_id',Auth::user()->id)->with('recipient:id,name,email')->orderBy('created_at','desc')->simplePaginate(12);
+        $qwertypayments = QwertyPayment::where('sender_id',Auth::user()->id)->with('recipient:id,name,email')->orderBy('created_at','desc')->simplePaginate(12);
 //        dd($xyzpayments);
-        return view('xyzpayment.sent',['xyzpayments'=>$xyzpayments]);
+        return view('qwertykassa.sent',['qwertypayments'=>$qwertypayments]);
     }
 
     public function received() {
-        $xyzpayments = XYZPayment::where('recipient_id',Auth::user()->id)->with('recipient:id,name,email')->orderBy('created_at','desc')->simplePaginate(12);
+        $qwertypayments = QwertyPayment::where('recipient_id',Auth::user()->id)->with('recipient:id,name,email')->orderBy('created_at','desc')->simplePaginate(12);
 //        dd($xyzpayments);
-        return view('xyzpayment.received',['xyzpayments'=>$xyzpayments]);
+        return view('qwertykassa.received',['qwertypayments'=>$qwertypayments]);
     }
 }

@@ -30,6 +30,9 @@ Route::get('xyzpayment/{id}',['uses'=>'XYZPaymentController@show', 'as'=>'xyzpay
 ////Payments QWERTY Kassa
 Route::get('qwertykassa', 'QwertykassaController@form')->name('qwertykassa.form');
 Route::post('qwertykassa', 'QwertykassaController@pay')->name('qwertykassa.pay');
+Route::get('qwertykassa/sent', 'QwertykassaController@sent')->name('qwertykassa.sent');
+Route::get('qwertykassa/received', 'QwertykassaController@received')->name('qwertykassa.received');
+Route::get('qwertykassa/{id}',['uses'=>'QwertykassaController@show', 'as'=>'qwertykassa.show'])->where('id','[0-9]+');
 
 ////Payments OLD Pay
 Route::get('oldpay', 'OldpayController@form')->name('oldpay.form');
@@ -43,6 +46,6 @@ Route::post('pay',[
 ]);
 
 //OTHER ROUTES
-Route::get('{path}',function() {
-    return redirect('/');
-})->where('path','[A-Za-z\-\.\_\/]+');
+//Route::get('{path}',function() {
+//    return redirect('/');
+//})->where('path','[A-Za-z\-\.\_\/]+');

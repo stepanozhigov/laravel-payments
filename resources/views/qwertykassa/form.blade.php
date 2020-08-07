@@ -1,11 +1,13 @@
+{{--recipients--}}
+{{--rates--}}
 @extends('layouts.paymentsapp')
 
 @section('content')
 <div class="w-full mx-4">
     {{--PAYMENT NAV--}}
-    <x-payment-nav-bar paymentService="qwertykassa">
+    <x-payment-nav-bar paymentService="qwertykassa" color="blue">
         <x-slot name="logo">
-            <x-xyz-payment-logo></x-xyz-payment-logo>
+            <x-qwerty-payment-logo></x-qwerty-payment-logo>
         </x-slot>
     </x-payment-nav-bar>
     {{--/PAYMENT NAV--}}
@@ -65,18 +67,28 @@
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="amount">
                     {{__('Amount')}} (RUB)
                 </label>
+                {{--        ROW        --}}
                 <div class="flex items-center justify-between items-stretch">
+                    {{--       SUM         --}}
                     <input class="border border-gray-200 appearance-none block w-full bg-gray-200 text-gray-700 rounded py-3 px-4 mr-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 @error('amount') border-red-500 @enderror" id="amount" name="amount" type="text" value="{{old('amount')}}" placeholder="0.00" autocomplete="false">
                     @error('amount')
                     <p class="text-red-500 text-xs italic mt-3">{{$message}}</p>
                     @enderror
-
-                    {{--       BUTTON REGISTER         --}}
-                    <div class="flex items-center justify-between">
-                        <button class="h-full bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline" type="submit">
-                            {{ __('Pay') }}
-                        </button>
-                    </div>
+                    {{--       Currency         --}}
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="currency">
+                        {{__('Currency')}}
+                    </label>
+                    <select class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="recipient" name="recipient_id">
+                        @foreach($rates as $val=>$text)
+                            <option value="{{ $val }}">(x{{ $text }}) {{$val}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{--       BUTTON REGISTER         --}}
+                <div class="flex items-center justify-between">
+                    <button class="h-full bg-blue-500 hover:bg-blue-300 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline" type="submit">
+                        {{ __('Pay') }}
+                    </button>
                 </div>
             </div>
         </form>
