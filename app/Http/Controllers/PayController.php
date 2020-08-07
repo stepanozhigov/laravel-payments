@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\XYZPayment;
 use Illuminate\Http\Request;
 
 class PayController extends Controller
@@ -24,7 +23,7 @@ class PayController extends Controller
             if($model == 'YXZPayment') {
                 return response()->json([
                     //'transaction_id'=>rand(1,4294967295),
-                    'transaction_id'=>self::generateTransactionId('transaction_id'),
+                    'transaction_id'=>self::generateTransactionId('App\XYZPayment','transaction_id'),
                     'sign' => $model.'&'.$request->access_key.'&'.$request->secret_key
                 ],200);
             } elseif ($model == 'QwertyPayment') {
@@ -36,9 +35,9 @@ class PayController extends Controller
         }
     }
 
-    static function generateTransactionId($field) {
+    static function generateTransactionId($class,$field) {
         $rnd_num = rand(1,4294967295);
-        $count = XYZPayment::where($field,$rnd_num)->get()->count();
+        $count = $class::where($field,$rnd_num)->get()->count();
         if($count>0) {
             self::generateTransactionId($field);
         } else {
