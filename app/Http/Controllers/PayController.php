@@ -21,24 +21,28 @@ class PayController extends Controller
         $model = array_search($request->access_key,$access_keys);
 //dd($model);
         if($model && $request->access_key && $request->secret_key) {
-            return response()->json([
-                'transaction_id'=>rand(1,4294967295),
-//                'transaction_id'=>$this->generateTransactionId($model),
-                'sign' => $model.'&'.$request->access_key.'&'.$request->secret_key
-            ],200);
+            if($model == 'YXZPayment') {
+                return response()->json([
+                    //'transaction_id'=>rand(1,4294967295),
+                    'transaction_id'=>self::generateTransactionId('transaction_id'),
+                    'sign' => $model.'&'.$request->access_key.'&'.$request->secret_key
+                ],200);
+            } elseif ($model == 'QwertyPayment') {
+                return response()->json([
+                    'payment_id'=>rand(1,4294967295),
+                    'sign' => $model.'&'.$request->access_key.'&'.$request->secret_key
+                ],200);
+            }
         }
     }
 
-    public function generateTransactionId($model) {
+    static function generateTransactionId($field) {
         $rnd_num = rand(1,4294967295);
-        $trans = $model::where('transaction_id',$rnd_num)->get();
-        dd($trans);
-        if($trans-count()>0) {
-            $this->generateTransactionId($model);
+        $count = XYZPayment::where($field,$rnd_num)->get()->count();
+        if($count>0) {
+            self::generateTransactionId($field);
         } else {
             return $rnd_num;
         }
     }
-
-
 }

@@ -12,6 +12,13 @@ use Zttp\ZttpResponse;
 
 class QwertykassaController extends Controller
 {
+    public $rates = [
+        'RUB'=>1,
+        'USD'=>73.76,
+        'EUR'=>87.20,
+        'UAH'=>2.67
+    ];
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -28,11 +35,10 @@ class QwertykassaController extends Controller
     }
 
     public function pay(Request $request) {
-        //validate input
-        //validate balance
+        //validate inputs
         $request->validate([
             'recipient_id' => 'required|numeric',
-            'order_id' => 'required | numeric',
+            'order_id' => 'required|numeric',
             'currency' => 'required',
             'sum' => ['required','numeric', function($attribute, $value, $fail) {
                 if((Auth::user()->balance) - $value < 0 ) {
@@ -41,14 +47,15 @@ class QwertykassaController extends Controller
             }],
         ]);
 
+        //calculate sum
+        $rub_sum = $this->rates['$request->currency']*$request->sum;
+
         //make Zttp request to payment service
-        $response = Zttp::asFormParams()->post('xyz-payment.ru/pay', [
-            'sum' => $request->amount,
-            'name' => $request->name,
-            'access_key' => config('services.xyzpayment.key'),
+        $response = Zttp::asFormParams()->post('qwerty.ru/pay', [
+            'sum' => $rub_sum,
+            'access_key' => config('services.qwertykassa.key'),
             'secret_key' => Auth::user()->secret_key
         ]);
-//        dd($response->json());
         if($response->status() === 200) {
             $paymentResponse = $response->json();
             //update sender balance

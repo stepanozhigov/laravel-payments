@@ -5,7 +5,7 @@ namespace App;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
-class XYZPayment extends Model
+class QwertyPayment extends Model
 {
     public $table = 'qwertypayments';
     public $timestamps = true;

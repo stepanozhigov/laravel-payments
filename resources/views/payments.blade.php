@@ -17,14 +17,14 @@
         </a>
 {{--    QWERTY-Kassa    --}}
         <a href="{{route('qwertykassa.form')}}" class="w-full lg:w-1/3 m-4">
-            <div class="flex-shrink-0 relative overflow-hidden bg-teal-500 rounded-lg shadow-lg text-white px-8 py-24">
+            <div class="flex-shrink-0 relative overflow-hidden bg-blue-500 rounded-lg shadow-lg text-white px-8 py-24">
                 <svg class="absolute bottom-0 left-0 mb-8" viewBox="0 0 375 283" fill="none" style="transform: scale(1.5); opacity: 0.1;">
                     <rect x="159.52" y="175" width="152" height="152" rx="8" transform="rotate(-45 159.52 175)" fill="white"></rect>
                     <rect y="107.48" width="152" height="152" rx="8" transform="rotate(-45 0 107.48)" fill="white"></rect>
                 </svg>
                 <div class="flex flex-col justify-center items-center">
                     <i class="fi-xnsuxl-apple text-6xl fill-current"></i>
-                    <h3 class="block font-light text-2xl text-center">{{__('QWERTY-Kassa')}}</h3>
+                    <h3 class="block font-light text-2xl text-center">{{__('QWERTY Kassa')}}</h3>
                 </div>
             </div>
         </a>
