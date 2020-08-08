@@ -17,7 +17,7 @@
     {{--GRID--}}
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-col-3 xl:grid-cols-4 gap-4 mb-4">
         @foreach($qwertypayments as $key=>$payment)
-            <x-xyz-payment-grid-item :payment="$payment"></x-xyz-payment-grid-item>
+            <x-qwerty-payment-grid-item :payment="$payment"></x-qwerty-payment-grid-item>
         @endforeach
     </div>
     {{--/GRID--}}

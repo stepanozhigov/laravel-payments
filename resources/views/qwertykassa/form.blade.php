@@ -15,6 +15,7 @@
     {{--    FORM    --}}
     <div class="w-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <form class="w-full md:w-1/2 lg:w-1/4 mx-auto" method="POST" action="{{route('qwertykassa.pay')}}">
+
             {{--      ERROR      --}}
             @if(session('fail') ?? '')
                 <div class="flex bg-red-600 mb-4 w-full">
@@ -34,7 +35,9 @@
                 </div>
             @endif
             {{--      /ERROR      --}}
+
             @csrf
+
             {{--        RECIPIENT        --}}
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
@@ -51,6 +54,7 @@
                 <p class="text-red-500 text-xs italic mt-3">{{$message}}</p>
                 @enderror
             </div>
+
             {{--        ORDER_ID        --}}
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="order_id">
@@ -64,7 +68,7 @@
             {{--       ROW        --}}
             <div class="mb-4 flex flex-row">
 
-                {{--       amount         --}}
+                {{--       SUM         --}}
                 <div class="w-1/2 mr-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="sum">
                         {{__('Amount')}}
