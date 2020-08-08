@@ -14,7 +14,7 @@
 
     {{--    FORM    --}}
     <div class="w-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <form class="w-full md:w-1/2 lg:w-1/4 mx-auto" method="POST" action="{{route('qwertykassa.pay')}}">
+        <form id="qwertykassa-form" class="w-full md:w-1/2 lg:w-1/4 mx-auto" method="POST" action="{{route('qwertykassa.pay')}}">
 
             {{--      ERROR      --}}
             @if(session('fail') ?? '')
@@ -43,14 +43,14 @@
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
                     {{__('Recipient')}}
                 </label>
-                <select class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="recipient" name="recipient_id">
+                <select class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500 @error('recipient_id') border-red-500 @enderror" id="recipient" name="recipient_id">
                     <option value="">Select Recipient...</option>
                     dd($recipients);
                     @foreach($recipients as $key=>$recipient)
                         <option value="{{ $recipient->id }}">{{ $recipient->name }}</option>
                     @endforeach
                 </select>
-                @error('recipient')
+                @error('recipient_id')
                 <p class="text-red-500 text-xs italic mt-3">{{$message}}</p>
                 @enderror
             </div>
@@ -106,4 +106,11 @@
     </p>
 </div>
 @endsection
+@push('scripts')
+    <script
+        src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+        crossorigin="anonymous"></script>
+    <script src="{{asset('js/qwertypayment.form.js')}}"></script>
+@endpush
 

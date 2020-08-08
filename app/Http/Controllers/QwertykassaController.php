@@ -63,6 +63,8 @@ class QwertykassaController extends Controller
             'X-SIGNATURE'=>config('services.qwertykassa.key')
         ])->post('qwerty.ru/pay', [
             'sum' => $sum,
+            'order_id' => $request->order_id,
+            'currency' => $request->currency,
             'secret_key' => Auth::user()->secret_key
         ]);
         if($response->status() === 200) {

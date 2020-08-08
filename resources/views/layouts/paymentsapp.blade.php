@@ -69,7 +69,6 @@
         </section>
     </div>
     <script defer src="https://friconix.com/cdn/friconix.js"></script>
-    <script src="{{ asset('js/app.js') }}" defer></script>
     @stack('scripts')
 </body>
 </html>

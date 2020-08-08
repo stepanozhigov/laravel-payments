@@ -36,6 +36,9 @@ return [
 
     'qwertykassa' => [
     'key' => env('QWERTYKASSA_KEY')
-],
+    ],
 
+    'oldpay' => [
+        'key' => env('OLDPAY_KEY')
+    ],
 ];

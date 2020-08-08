@@ -36,6 +36,10 @@ Route::get('qwertykassa/{id}',['uses'=>'QwertykassaController@show', 'as'=>'qwer
 
 ////Payments OLD Pay
 Route::get('oldpay', 'OldpayController@form')->name('oldpay.form');
+Route::post('oldpay', 'OldpayController@pay')->name('oldpay.pay');
+Route::get('oldpay/sent', 'OldpayController@sent')->name('oldpay.sent');
+Route::get('oldpay/received', 'OldpayController@received')->name('oldpay.received');
+Route::get('oldpay/{id}',['uses'=>'OldpayController@show', 'as'=>'oldpay.show'])->where('id','[0-9]+');
 
 //PAYMENT REMOTE SERVICE
 //https://xyz-payment.ru/pay
