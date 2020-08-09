@@ -16,7 +16,7 @@
 
     {{--    FORM    --}}
     <div class="w-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <form id="oldpayment-form" class="w-full md:w-1/2 lg:w-1/4 mx-auto" method="POST" action="{{route('oldpay.pay')}}" data-url="{{url('/')}}">
+        <form id="oldpayment-form" class="w-full md:w-1/2 lg:w-1/4 mx-auto" method="POST" action="{{route('oldpay.pay')}}">
 
             {{--      ERROR      --}}
             @if(session('fail') ?? '')
@@ -39,7 +39,8 @@
             {{--      /ERROR      --}}
 
             @csrf
-
+            <input type="hidden" name="secret_key" value="{{ Auth::user()->secret_key }}">
+            <input type="hidden" name="url" value="{{route('oldpay.form')}}">
             {{--        RECIPIENT        --}}
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
@@ -93,8 +94,8 @@
 @endsection
 @push('scripts')
     <script
-        src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+        src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
         crossorigin="anonymous"></script>
     <script src="{{asset('js/oldpayment.form.js')}}"></script>
 @endpush

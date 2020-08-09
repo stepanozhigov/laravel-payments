@@ -45,7 +45,8 @@ class PayController extends Controller
             return response()
                 ->json([
                     'transaction_id'=>self::generateTransactionId('App\Oldpay','transaction_id'),
-                    'sum'=>$request->sum
+                    'sum'=>$request->sum,
+                    'order_id'=>$request->order_id,
                 ],200)->header('X-SECRET-KEY',bcrypt($signature));
         }
     }

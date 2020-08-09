@@ -36,7 +36,8 @@ Route::get('qwertykassa/{id}',['uses'=>'QwertykassaController@show', 'as'=>'qwer
 
 ////Payments OLD Pay
 Route::get('oldpay', 'OldpayController@form')->name('oldpay.form')->middleware('auth');
-Route::post('oldpay', 'OldpayController@pay')->name('oldpay.pay')->middleware('auth');
+//Route::post('oldpay', 'OldpayController@pay')->name('oldpay.pay')->middleware('auth');
+Route::post('oldpay', 'API\PaymentServiceController@create')->name('oldpay.pay')->middleware('auth');
 Route::get('oldpay/sent', 'OldpayController@sent')->name('oldpay.sent')->middleware('auth');
 Route::get('oldpay/received', 'OldpayController@received')->name('oldpay.received')->middleware('auth');
 Route::get('oldpay/{id}',['uses'=>'OldpayController@show', 'as'=>'oldpay.show'])->where('id','[0-9]+')->middleware('auth');

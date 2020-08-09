@@ -94,13 +94,14 @@
 /***/ (function(module, exports) {
 
 $(function () {
-  var $form = $('#qwertykassa-form'); //console.log($form);
+  var $form = $('#oldpayment-form'); //console.log($form);
 
   $form.submit(function (e) {
     e.preventDefault();
-    $.post('/oldpay', $form.serialize()).done(function (res) {
+    $.post('/api/create', $form.serialize()).done(function (res) {
       if (res.status == 'success') {
-        window.location.href = $form.data('url') + res.redirect_to;
+        //console.log(res);
+        window.location.href = res.redirect_to;
       }
     });
   });

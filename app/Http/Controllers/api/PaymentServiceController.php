@@ -21,8 +21,10 @@ class PaymentServiceController extends Controller
             if($transaction) {
                 return response()->json([
                     'status'=>'success',
+                    'id'=>$transaction->id,
+                    'transaction_id'=>$transaction->transaction_id,
+                    'order_id'=>$transaction->order_id,
                     'sum'=>$transaction->sum,
-                    'order_id'=>$transaction->order_id
                 ],200);
             } else {
                 return response()->json([
@@ -78,25 +80,25 @@ class PaymentServiceController extends Controller
                     'sum'=>$request->input('sum')+0.00
                 ]);
                 //success result
+//                'redirect_to'=>"/oldpay/".$payment->id,
                 return response()->json([
-                    'created'=>true,
-                    'message'=>'Transaction complete...',
-                    'signature'=>$response->header('X-SECRET-KEY'),
-                    'transaction'=>$transaction
+                    'status'=>'success',
+                    'redirect_to'=>$request->url."/".$transaction->id,
+                    'transaction_id'=>$transaction->transaction_id,
+                    'order_id'=>$transaction->order_id,
+                    'sum'=>$transaction->sum
 
                 ],201);
             } else {
                 //hash check failed
                 return response()->json([
-                    'created'=>false,
-                    'message'=>'Hash check failed...Check your access key',
+                    'status'=>'fail'
                 ],401);
             }
         }
         //payment service failure
         return response()->json([
-            'created'=>false,
-            'message'=>'Payment Server error...Try again later',
+            'status'=>'fail'
         ],500);
     }
 

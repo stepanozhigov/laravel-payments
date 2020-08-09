@@ -1,12 +1,13 @@
 $(function() {
-    var $form = $('#qwertykassa-form');
+    var $form = $('#oldpayment-form');
     //console.log($form);
     $form.submit((e)=>{
         e.preventDefault();
-        $.post('/oldpay',$form.serialize())
+        $.post('/api/create',$form.serialize())
             .done((res)=>{
                 if(res.status == 'success') {
-                    window.location.href = $form.data('url')+res.redirect_to;
+                    //console.log(res);
+                    window.location.href = res.redirect_to;
                 }
             });
     })

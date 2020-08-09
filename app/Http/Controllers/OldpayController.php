@@ -26,6 +26,64 @@ class OldpayController extends Controller
     }
 
     public function pay(Request $request) {
+    //validate input
+    //validate balance
+    $request->validate([
+        'recipient_id' => 'required|exists:users,id',
+        'order_id' => 'required|numeric',
+        'sum' => ['required','numeric', function($attribute, $value, $fail) {
+            if((Auth::user()->balance) - $value < 0 ) {
+                $fail("Check your balance");
+            }
+        }],
+    ]);
+    //make Zttp request to payment service
+    $response = Zttp::withHeaders([
+        'X-SECRET-KEY'=>config('services.oldpay.key')
+    ])->post('old-pay.ru/pay', [
+        'sum' => $request->sum,
+        'order_id' => $request->order_id,
+        'secret_key' => Auth::user()->secret_key
+    ]);
+
+    if($response->status() === 200) {
+        $paymentResponse = $response->json();
+        //update sender balance
+        $sender = Auth::user();
+        $sender->balance -= $request->sum;
+        $sender->save();
+
+        //update recipient balance
+        $recipient = User::findOrFail($request->recipient_id);
+        $recipient->balance += $request->sum;
+        $recipient->save();
+        if(Hash::check(config('services.oldpay.key'),$response->header('X-SECRET-KEY'))) {
+            //save transaction
+            $transaction = OldPay::create([
+                'transaction_id'=>$paymentResponse['transaction_id'],
+                'order_id'=>$request->order_id,
+                'sender_id'=>Auth::user()->id,
+                'recipient_id'=>$request->input('recipient_id'),
+                'sum'=>$request->input('sum')+0.00
+            ]);
+            //success result
+            return redirect()->route('oldpay.show',['id'=>$transaction->id])
+                ->withSuccess('Transaction complete...')
+                ->withSignature($response->header('X-SECRET-KEY'));
+        } else {
+            //payment service failure
+            return redirect()->route('oldpay.form')
+                ->withFail('Hash check failed...')
+                ->withInput();
+        }
+    }
+    //payment service failure
+    return redirect()->route('oldpay.form')
+        ->withFail('Transaction failed...')
+        ->withInput();
+}
+
+    public function apiPay(Request $request) {
         //validate input
         //validate balance
         $request->validate([
