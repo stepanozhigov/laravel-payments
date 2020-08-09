@@ -37,6 +37,8 @@ class PayController extends Controller
             return response()
                 ->json([
                 'payment_id'=>self::generateTransactionId('App\QwertyPayment','payment_id'),
+                'order_id'=>$request->order_id,
+                'currency'=>$request->currency,
                 'sum'=>$request->sum
             ],200)->header('X-SIGNATURE',bcrypt($signature));
         } elseif ($model == 'OldPay') {

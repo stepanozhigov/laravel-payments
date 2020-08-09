@@ -21,25 +21,25 @@ Route::get('/', 'HomeController@index')->name('main');
 Route::get('/payments', 'PaymentController@index')->name('payments');
 
 ////Payments XYZ Payment
-Route::get('xyzpayment', 'XYZPaymentController@form')->name('xyzpayment.form');
-Route::post('xyzpayment', 'XYZPaymentController@pay')->name('xyzpayment.pay');
-Route::get('xyzpayment/sent', 'XYZPaymentController@sent')->name('xyzpayment.sent');
-Route::get('xyzpayment/received', 'XYZPaymentController@received')->name('xyzpayment.received');
-Route::get('xyzpayment/{id}',['uses'=>'XYZPaymentController@show', 'as'=>'xyzpayment.show'])->where('id','[0-9]+');
+Route::get('xyzpayment', 'XYZPaymentController@form')->name('xyzpayment.form')->middleware('auth');
+Route::post('xyzpayment', 'XYZPaymentController@pay')->name('xyzpayment.pay')->middleware('auth');
+Route::get('xyzpayment/sent', 'XYZPaymentController@sent')->name('xyzpayment.sent')->middleware('auth');
+Route::get('xyzpayment/received', 'XYZPaymentController@received')->name('xyzpayment.received')->middleware('auth');
+Route::get('xyzpayment/{id}',['uses'=>'XYZPaymentController@show', 'as'=>'xyzpayment.show'])->where('id','[0-9]+')->middleware('auth');
 
 ////Payments QWERTY Kassa
-Route::get('qwertykassa', 'QwertykassaController@form')->name('qwertykassa.form');
-Route::post('qwertykassa', 'QwertykassaController@pay')->name('qwertykassa.pay');
-Route::get('qwertykassa/sent', 'QwertykassaController@sent')->name('qwertykassa.sent');
-Route::get('qwertykassa/received', 'QwertykassaController@received')->name('qwertykassa.received');
-Route::get('qwertykassa/{id}',['uses'=>'QwertykassaController@show', 'as'=>'qwertykassa.show'])->where('id','[0-9]+');
+Route::get('qwertykassa', 'QwertykassaController@form')->name('qwertykassa.form')->middleware('auth');
+Route::post('qwertykassa', 'QwertykassaController@apiPay')->name('qwertykassa.pay')->middleware('auth:api');
+Route::get('qwertykassa/sent', 'QwertykassaController@sent')->name('qwertykassa.sent')->middleware('auth');
+Route::get('qwertykassa/received', 'QwertykassaController@received')->name('qwertykassa.received')->middleware('auth');
+Route::get('qwertykassa/{id}',['uses'=>'QwertykassaController@show', 'as'=>'qwertykassa.show'])->where('id','[0-9]+')->middleware('auth');
 
 ////Payments OLD Pay
-Route::get('oldpay', 'OldpayController@form')->name('oldpay.form');
-Route::post('oldpay', 'OldpayController@pay')->name('oldpay.pay');
-Route::get('oldpay/sent', 'OldpayController@sent')->name('oldpay.sent');
-Route::get('oldpay/received', 'OldpayController@received')->name('oldpay.received');
-Route::get('oldpay/{id}',['uses'=>'OldpayController@show', 'as'=>'oldpay.show'])->where('id','[0-9]+');
+Route::get('oldpay', 'OldpayController@form')->name('oldpay.form')->middleware('auth');
+Route::post('oldpay', 'OldpayController@pay')->name('oldpay.pay')->middleware('auth');
+Route::get('oldpay/sent', 'OldpayController@sent')->name('oldpay.sent')->middleware('auth');
+Route::get('oldpay/received', 'OldpayController@received')->name('oldpay.received')->middleware('auth');
+Route::get('oldpay/{id}',['uses'=>'OldpayController@show', 'as'=>'oldpay.show'])->where('id','[0-9]+')->middleware('auth');
 
 //PAYMENT REMOTE SERVICE
 //https://xyz-payment.ru/pay

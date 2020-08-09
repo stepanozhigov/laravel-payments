@@ -18,10 +18,13 @@ use App\Http\Controllers\api\PaymentServiceController;
 
 
 Route::middleware(['auth:api'])->group(function() {
+    //QWERTY API
 
-    Route::get('user', 'api\PaymentServiceController@getUser');
-    Route::post('create', 'api\PaymentServiceController@process');
 
+    //OLDPAY API
+    Route::get('get-status/{transaction_id}', 'OldpayController@getStatus');
+    Route::post('get-status', 'API\PaymentServiceController@getStatus');
+    Route::post('create', 'API\PaymentServiceController@create');
 });
 
 

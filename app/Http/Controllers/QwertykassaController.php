@@ -22,11 +22,6 @@ class QwertykassaController extends Controller
         'UAH'=>2.67
     ];
 
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function form() {
         $recipients = User::where('id','!=',Auth::user()->id)->get();
         return view('qwertykassa.form',[
@@ -40,6 +35,7 @@ class QwertykassaController extends Controller
             ['qwertypayment'=>QwertyPayment::with('recipient:id,name,email')->with('sender:id,name,email')->findOrFail($id)]);
     }
 
+    //WEB
     public function pay(Request $request) {
         //validate inputs
         $request->validate([
@@ -107,6 +103,81 @@ class QwertykassaController extends Controller
             return redirect()->route('qwertykassa.form')
                 ->withFail('Transaction failed...')
                 ->withInput();
+        }
+    }
+
+    //API
+    //auth:api
+    public function apiPay(Request $request) {
+        //validate inputs
+        $request->validate([
+            'recipient_id' => 'required|numeric',
+            'order_id' => 'required|numeric',
+            'currency' => 'required',
+            'sum' => 'required|numeric',
+        ]);
+        //calculate sum
+        $rate = self::$rates[$request->currency];
+        $sum = round($rate*$request->sum,2);
+        //check balance
+        if($sum > Auth::user()->balance) {
+            return response()->json([
+                'status'=>'fail',
+                'message'=>'Check your balance...'
+            ],400);
+        }
+
+        //make Zttp request to payment service
+        $response = Zttp::withHeaders([
+            'X-SIGNATURE'=>config('services.qwertykassa.key')
+        ])->post('qwerty.ru/pay', [
+            'sum' => $sum,
+            'order_id' => $request->order_id,
+            'currency' => $request->currency,
+            'secret_key' => Auth::user()->secret_key
+        ]);
+
+        if($response->status() === 200) {
+            $paymentResponse = $response->json();
+
+            //update sender balance
+            $sender = Auth::user();
+            $sender->balance -= $sum;
+            $sender->save();
+
+            //update recipient balance
+            $recipient = User::findOrFail($request->recipient_id);
+            $recipient->balance += $sum;
+            $recipient->save();
+
+            //HASH CHECK
+            if(Hash::check(config('services.qwertykassa.key'),$response->header('X-SIGNATURE'))) {
+                //save transaction
+                $payment = QwertyPayment::create([
+                    'payment_id'=>$paymentResponse['payment_id'],
+                    'order_id'=>$paymentResponse['order_id'],
+                    'sender_id'=>Auth::user()->id,
+                    'recipient_id'=>$request->recipient_id,
+                    'sum'=>$paymentResponse['sum'],
+                    'rate'=>$rate,
+                    'currency'=>$paymentResponse['currency']
+                ]);
+                if($payment) {
+                    return response()->json([
+                        'status'=>'success',
+                        'redirect_to'=>"qwertykassa/".$payment->id,
+                    ],201);
+                } else {
+                    return response()->json([
+                        'status'=>'fail',
+                        'message'=>'Server error...try later...'
+                    ],500);
+                }
+            }
+        } else {
+            return response()->json([
+                'status'=>'fail'
+            ],500);
         }
     }
 

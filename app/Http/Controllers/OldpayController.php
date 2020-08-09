@@ -57,7 +57,6 @@ class OldpayController extends Controller
             $recipient = User::findOrFail($request->recipient_id);
             $recipient->balance += $request->sum;
             $recipient->save();
-            //dd(Hash::check(config('services.oldpay.key'),$response->header('X-SECRET-KEY')));
             if(Hash::check(config('services.oldpay.key'),$response->header('X-SECRET-KEY'))) {
                 //save transaction
                 $transaction = OldPay::create([
@@ -82,6 +81,27 @@ class OldpayController extends Controller
         return redirect()->route('oldpay.form')
             ->withFail('Transaction failed...')
             ->withInput();
+    }
+
+    public function getStatus($transaction_id) {
+        //make Zttp request to payment service
+        $response = Zttp::withHeaders([
+            'X-SECRET-KEY'=>config('services.oldpay.key')
+        ])->post('old-pay.ru/api/get-status', [
+            'transaction_id' => $transaction_id,
+            'secret_key' => Auth::user()->secret_key
+        ]);
+        if($response->status() === 200) {
+            $res = $response->json();
+            return response()->json([
+                'status'=>$res['status'],
+                'sum' => $res['sum'],
+                'order_id'=>$res['order_id']
+            ],200);
+        }
+        return response()->json([
+            'status'=>'fail',
+        ],404);
     }
 
     public function show($id) {
