@@ -165,7 +165,7 @@ class QwertykassaController extends Controller
                 if($payment) {
                     return response()->json([
                         'status'=>'success',
-                        'redirect_to'=>"qwertykassa/".$payment->id,
+                        'redirect_to'=>"/qwertykassa/".$payment->id,
                     ],201);
                 } else {
                     return response()->json([
