@@ -12,9 +12,11 @@
     </x-payment-nav-bar>
     {{--/PAYMENT NAV--}}
 
+    {{--  STATUS CHECK  --}}
+
     {{--    FORM    --}}
     <div class="w-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <form id="oldpayment-form" class="w-full md:w-1/2 lg:w-1/4 mx-auto" method="POST" action="{{route('oldpay.pay')}}">
+        <form id="oldpayment-form" class="w-full md:w-1/2 lg:w-1/4 mx-auto" method="POST" action="{{route('oldpay.pay')}}" data-url="{{url('/')}}">
 
             {{--      ERROR      --}}
             @if(session('fail') ?? '')

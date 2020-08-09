@@ -94,10 +94,15 @@
 /***/ (function(module, exports) {
 
 $(function () {
-  var $form = $('#oldpayment-form'); //console.log($form);
+  var $form = $('#qwertykassa-form'); //console.log($form);
 
-  $form.submit(function (e) {//e.preventDefault();
-    //
+  $form.submit(function (e) {
+    e.preventDefault();
+    $.post('/oldpay', $form.serialize()).done(function (res) {
+      if (res.status == 'success') {
+        window.location.href = $form.data('url') + res.redirect_to;
+      }
+    });
   });
 });
 

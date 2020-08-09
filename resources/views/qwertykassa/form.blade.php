@@ -13,8 +13,42 @@
     {{--/PAYMENT NAV--}}
 
     {{--    FORM    --}}
-    <div class="w-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <form id="qwertykassa-form" class="w-full md:w-1/2 lg:w-1/4 mx-auto" method="POST" action="{{route('qwertykassa.pay')}}" data-url="{{url('/')}}">
+    <div class="relative w-full bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+
+        {{--  JSON MESSAGE  --}}
+        <div id="result-box" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-blue-500 z-50 text-white text-center font-light text-xl p-6">
+            <a href="#" id="close-box" class="absolute top-0 right-0 p-2">
+                <svg viewBox="0 0 20 20" fill="currentColor" class="x-circle w-6 h-6"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                </svg>
+            </a>
+            <h3 class="text-3xl">Payment Complete</h3>
+            <div class="w-full md:w-1/2 lg:w-1/4 mx-auto m-6">
+                <div class="flex justify-between items-center">
+                    <p id="result-order_id">order_id</p>
+                    <p>0</p>
+                </div>
+                <div class="flex justify-between items-center">
+                    <p id="result-payment_id">payment_id</p>
+                    <p>0</p>
+                </div>
+                <div class="flex justify-between items-center">
+                    <p id="result-sum">sum</p>
+                    <p>0</p>
+                </div>
+                <div class="flex justify-between items-center">
+                    <p id="result-currency">currency</p>
+                    <p>0</p>
+                </div>
+                <div class="flex justify-center items-center mt-4">
+                    <a href="#" id="result-link" class="bg-white hover:bg-blue-100 text-blue-500 font-light py-2 px-6 border border-blue-500 rounded shadow">
+                        View
+                    </a>
+                </div>
+            </div>
+        </div>
+        {{--  /JSON MESSAGE  --}}
+
+        <form id="qwertykassa-form" class="w-full md:w-1/2 lg:w-1/4 mx-auto" method="POST" action="{{route('qwertykassa.pay')}}" data-url="{{route('qwertykassa.form')}}">
 
             {{--      ERROR      --}}
             @if(session('fail') ?? '')
