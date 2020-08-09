@@ -4,7 +4,7 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class QwertyPaymentMessage extends Component
+class OldPaymentMessage extends Component
 {
     public $message, $type, $signature;
     /**

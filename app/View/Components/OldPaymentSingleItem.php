@@ -4,7 +4,7 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class QwertyPaymentSingleItem extends Component
+class OldPaymentSingleItem extends Component
 {
 
     public $payment;

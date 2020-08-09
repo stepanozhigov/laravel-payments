@@ -5,7 +5,7 @@ namespace App\View\Components;
 use Carbon\Carbon;
 use Illuminate\View\Component;
 
-class QwertyPaymentGridItem extends Component
+class OldPaymentGridItem extends Component
 {
 
     public $payment;
